@@ -49,6 +49,7 @@ export function InvoiceDetailPage() {
 
   const inv = query.data;
   const money = (n: number) => formatMoney(n, inv.currencySymbol);
+  const discount = `${inv.totalDiscount > 0 ? '−' : ''}${money(inv.totalDiscount)}`;
 
   return (
     <section>
@@ -147,7 +148,7 @@ export function InvoiceDetailPage() {
           <dt>Tax ({inv.taxRate}%)</dt>
           <dd>{money(inv.totalTax)}</dd>
           <dt>Discount</dt>
-          <dd>−{money(inv.totalDiscount)}</dd>
+          <dd>{discount}</dd>
           <dt className="totals-strong">Total</dt>
           <dd className="totals-strong">{money(inv.totalAmount)}</dd>
           <dt>Paid</dt>

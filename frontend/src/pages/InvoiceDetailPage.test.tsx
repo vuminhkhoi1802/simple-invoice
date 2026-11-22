@@ -34,6 +34,14 @@ describe('InvoiceDetailPage', () => {
     expect(screen.getAllByText('Overdue').length).toBeGreaterThan(0);
   });
 
+  it('shows a zero discount without a minus sign', async () => {
+    vi.mocked(invoicesApi.get).mockResolvedValue(detail({ totalDiscount: 0 }));
+    renderWithProviders(<InvoiceDetailPage />, route);
+
+    const discount = (await screen.findByText('Discount')).nextElementSibling;
+    expect(discount).toHaveTextContent(/^AU\$0\.00$/);
+  });
+
   it('shows a not-found state for a 404', async () => {
     vi.mocked(invoicesApi.get).mockRejectedValue(new ApiError(404, ['Invoice not found']));
     renderWithProviders(<InvoiceDetailPage />, route);
