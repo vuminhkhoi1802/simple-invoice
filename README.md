@@ -99,7 +99,7 @@ npm run lint
 
 The e2e suite **drops and re-creates** the schema of the target database. It runs against `simple_invoice_test`, never your dev DB, unless you override `E2E_DB_NAME`.
 
-CI (`.github/workflows/ci.yml`) runs lint, typecheck, unit and e2e tests with a Postgres service container. It then brings the whole stack up with `docker compose up --build --wait` and smoke-tests login and listing through the nginx proxy.
+CI (`.github/workflows/ci.yml`) runs lint, typecheck, unit and e2e tests with a Postgres service container. It then brings the whole stack up with `docker compose up --build --wait` and smoke-tests the security headers, login and listing through the nginx proxy.
 
 ---
 

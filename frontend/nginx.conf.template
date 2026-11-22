@@ -5,6 +5,7 @@ server {
   index index.html;
 
   server_tokens off;
+  # add_header in a location discards these inherited ones, so the static locations repeat them.
   add_header X-Content-Type-Options nosniff always;
   add_header X-Frame-Options DENY always;
   add_header Referrer-Policy strict-origin-when-cross-origin always;
@@ -17,18 +18,28 @@ server {
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
+    # Helmet sends these too; hide its copies so they aren't sent twice with conflicting values.
+    proxy_hide_header X-Content-Type-Options;
+    proxy_hide_header X-Frame-Options;
+    proxy_hide_header Referrer-Policy;
   }
 
   # Fingerprinted build assets can be cached forever.
   location /assets/ {
     expires 1y;
     add_header Cache-Control "public, immutable";
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
     try_files $uri =404;
   }
 
   # SPA fallback: client-side routes resolve to index.html.
   location / {
     add_header Cache-Control "no-cache";
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
     try_files $uri $uri/ /index.html;
   }
 }
