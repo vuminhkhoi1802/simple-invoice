@@ -1,0 +1,56 @@
+# One command from zero:  docker compose up --build
+# Values below are DEV-ONLY defaults so the stack starts without any setup.
+# Override any of them via a root .env file (see .env.example) or the shell.
+name: simple-invoice
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-simple_invoice}
+    ports:
+      - "${DB_HOST_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      APP_TIMEZONE: ${APP_TIMEZONE:-UTC}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-simple_invoice}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-insecure-jwt-secret-change-me-in-any-real-env}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-3600}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      CORS_ORIGIN: ${CORS_ORIGIN:-}
+      SEED_USER_EMAIL: ${SEED_USER_EMAIL:-admin@simpleinvoice.dev}
+      SEED_USER_PASSWORD: ${SEED_USER_PASSWORD:-Password123!}
+      SEED_USER_FULLNAME: ${SEED_USER_FULLNAME:-Demo Admin}
+    ports:
+      - "${BACKEND_HOST_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "${FRONTEND_HOST_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pgdata:
