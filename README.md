@@ -1,5 +1,7 @@
 # SimpleInvoice
 
+[![CI](https://github.com/vuminhkhoi1802/simple-invoice/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vuminhkhoi1802/simple-invoice/actions/workflows/ci.yml)
+
 A full-stack invoicing app: a **React + TypeScript** SPA, a **NestJS** REST API and **PostgreSQL**.
 Users sign in, browse invoices (search, filter, sort, server-side pagination), open an invoice's details and create new invoices. All totals are calculated on the server.
 
@@ -42,6 +44,44 @@ Host ports can be changed with `FRONTEND_HOST_PORT`, `BACKEND_HOST_PORT` and `DB
 These come from `SEED_USER_EMAIL` / `SEED_USER_PASSWORD`. The seed upserts this user, so the credentials above always work after a seed run.
 
 To reset everything: `docker compose down -v && docker compose up --build`.
+
+---
+
+## Screenshots
+
+Captured from the Docker stack (`docker compose up --build`) at commit `061fb48` on a freshly seeded database, signed in with the [default login](#default-login). They follow one flow: sign in, browse, filter, create an invoice, open it.
+
+**1. Sign in**
+
+![Sign-in page with email and password fields](docs/screenshots/01-login.png)
+
+**2. Invoice list**: all 41 seeded invoices, 10 per page, with search, status filter, sort and pagination.
+
+![Invoice list showing 1-10 of 41 invoices](docs/screenshots/02-invoice-list.png)
+
+**3. Overdue filter** (`?status=overdue`): 25 of the 41 invoices. Overdue is calculated when an invoice is read and never stored.
+
+![Invoice list filtered to Overdue, 1-10 of 25, every row badged Overdue](docs/screenshots/03-overdue-filter.png)
+
+**4. Create an invoice**: one line item (3 × 480.00), 10% tax and a 50.00 discount. The browser only sends these inputs; the server computes the totals.
+
+![New invoice form filled in for invoice SI-1041](docs/screenshots/04-create-invoice.png)
+
+**5. Created**: a confirmation toast, and the new invoice is the first row of the list (42 invoices now).
+
+![Invoice list with the toast "Invoice SI-1041 created" and SI-1041 as the first row](docs/screenshots/05-invoice-created.png)
+
+**6. Invoice detail**: AU$1,440.00 subtotal + AU$144.00 tax − AU$50.00 discount = AU$1,534.00 total, as calculated by the server.
+
+![Invoice detail showing subtotal AU$1,440.00, tax AU$144.00, discount AU$50.00 and total AU$1,534.00](docs/screenshots/06-invoice-detail.png)
+
+**7. Mobile (390 px wide)**: the filters stack and the table becomes cards.
+
+<img src="docs/screenshots/07-mobile-list.png" alt="Invoice list at 390 px wide with stacked filters and card rows" width="320">
+
+**8. API docs**: Swagger UI at http://localhost:3000/api/docs.
+
+![Swagger UI listing the health, auth and invoices endpoints](docs/screenshots/08-api-docs.png)
 
 ---
 
