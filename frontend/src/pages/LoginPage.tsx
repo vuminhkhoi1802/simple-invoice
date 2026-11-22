@@ -41,7 +41,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="login-page">
+    <main className="login-page">
       <form className="card login-card" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="login-brand">
           <img src="/favicon.svg" alt="" width={40} height={40} />
@@ -94,6 +94,6 @@ export function LoginPage() {
           {isSubmitting ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
-    </div>
+    </main>
   );
 }

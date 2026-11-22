@@ -63,6 +63,16 @@ jobs:
       - name: Smoke test through the frontend proxy
         run: |
           curl -fsS http://localhost:8080/ | grep -q SimpleInvoice
+          ASSET=$(curl -fsS http://localhost:8080/ | grep -o '/assets/[^"]*\.js' | head -1)
+          test -n "$ASSET" || { echo "no /assets/*.js referenced from /"; exit 1; }
+          # Helmet sets these too; /api must carry exactly one copy of each.
+          for route in / "$ASSET" /api/health; do
+            hdrs=$(curl -fsSI "http://localhost:8080$route")
+            for h in "x-content-type-options: nosniff" "x-frame-options: DENY" "referrer-policy: strict-origin-when-cross-origin"; do
+              grep -qiE "^$h[[:space:]]*$" <<<"$hdrs" || { echo "missing '$h' on $route"; exit 1; }
+              [ "$(grep -ciE "^${h%%:*}:" <<<"$hdrs")" -eq 1 ] || { echo "duplicate '${h%%:*}' on $route"; exit 1; }
+            done
+          done
           curl -fsS http://localhost:3000/health
           TOKEN=$(curl -fsS http://localhost:8080/api/auth/login \
             -H 'Content-Type: application/json' \

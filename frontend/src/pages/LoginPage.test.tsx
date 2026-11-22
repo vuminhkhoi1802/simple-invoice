@@ -25,6 +25,12 @@ describe('LoginPage', () => {
     vi.mocked(authApi.me).mockRejectedValue(new ApiError(401, ['Authentication required']));
   });
 
+  it('renders the sign-in form inside a main landmark', async () => {
+    renderLogin();
+    const main = await screen.findByRole('main');
+    expect(main).toContainElement(screen.getByRole('button', { name: /sign in/i }));
+  });
+
   it('validates email and password on the client before calling the API', async () => {
     renderLogin();
     await userEvent.click(await screen.findByRole('button', { name: /sign in/i }));
