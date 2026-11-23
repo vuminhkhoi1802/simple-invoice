@@ -49,7 +49,9 @@ To reset everything: `docker compose down -v && docker compose up --build`.
 
 ## Screenshots
 
-Captured from the Docker stack (`docker compose up --build`) at commit `061fb48` on a freshly seeded database, signed in with the [default login](#default-login). They follow one flow: sign in, browse, filter, create an invoice, open it.
+Captured from the Docker stack (`docker compose up --build`) on a freshly seeded database, signed in with the [default login](#default-login). Items 1–7 follow one flow: sign in, browse, filter, create an invoice, open it.
+
+The UI is dark-only. There is no theme toggle, and it stays dark when the OS asks for a light scheme. The palette is a set of custom properties at the top of [`frontend/src/index.css`](frontend/src/index.css), and [`frontend/src/theme.test.ts`](frontend/src/theme.test.ts) checks WCAG AA contrast (4.5:1 for text, 3:1 for controls and indicators) on those exact values.
 
 **1. Sign in**
 
@@ -79,9 +81,37 @@ Captured from the Docker stack (`docker compose up --build`) at commit `061fb48`
 
 <img src="docs/screenshots/07-mobile-list.png" alt="Invoice list at 390 px wide with stacked filters and card rows" width="320">
 
-**8. API docs**: Swagger UI at http://localhost:3000/api/docs.
+**8. API docs**: Swagger UI at http://localhost:3000/api/docs. The API serves this page, so the app's theme does not apply to it.
 
 ![Swagger UI listing the health, auth and invoices endpoints](docs/screenshots/08-api-docs.png)
+
+### Dark theme details
+
+States the main flow does not reach, captured from the same stack.
+
+**9. Sign-in error**: a wrong password shows "Invalid email or password" in a red alert.
+
+<img src="docs/screenshots/09-login-error.png" alt="Sign-in card with the alert Invalid email or password" width="360">
+
+**10. Form validation**: submitting the empty form flags five fields (customer name, customer email, invoice number, item name, rate) with a red border and a message, and moves focus to the first one. A focused invalid field gets a red glow instead of the usual blue one.
+
+![New invoice form with five invalid fields, each with a red border and an error message](docs/screenshots/10-form-validation.png)
+
+**11. Hover and focus**: the hovered row gets a lighter surface, and the focused search box gets an accent border and glow.
+
+![Invoice list with the third row hovered and the search box focused](docs/screenshots/11-hover-and-focus.png)
+
+**12. Empty state**: a search that matches nothing.
+
+![Empty list reading "No invoices match your search or filter" with a Clear filters action](docs/screenshots/12-empty-state.png)
+
+**13. Invoice not found**: an unknown invoice id.
+
+![Error panel reading "Invoice not found. It may have been removed, or the link is incorrect."](docs/screenshots/13-invoice-not-found.png)
+
+**14. Mobile detail (390 px wide)**: invoice SI-1041 on a phone-sized screen, captured at 2× pixel density.
+
+<img src="docs/screenshots/14-mobile-detail.png" alt="Invoice SI-1041 at 390 px wide" width="320">
 
 ---
 
