@@ -22,7 +22,8 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: 'jsdom',
       setupFiles: ['./src/test/setup.ts'],
-      css: false,
+      // css:false blanks every .css id, including the ?raw import theme.test.ts reads.
+      css: { include: /\.css\?raw$/ },
       restoreMocks: true,
     },
   };
